@@ -1,0 +1,31 @@
+package loginterceptor
+
+import (
+	"fmt"
+	"log"
+	"net/url"
+	"testing"
+)
+
+func TestEncoding(t *testing.T) {
+	body := `payload=%7B%22type%22%3A%22interactive_message%22%2C%22actions%22%3A%5B%7B%22name%22%3A%22ACTION_002%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%223600000%22%7D%5D%2C%22callback_id%22%3A%22sillyhat-birthday%22%2C%22team%22%3A%7B%22id%22%3A%22TLNQNBVSS%22%2C%22domain%22%3A%22sillyhatxu%22%7D%2C%22channel%22%3A%7B%22id%22%3A%22CNQ7BNEQJ%22%2C%22name%22%3A%22birthday%22%7D%2C%22user%22%3A%7B%22id%22%3A%22ULL6GKJ2G%22%2C%22name%22%3A%22sillyhatxu%22%7D%2C%22action_ts%22%3A%221570301942.702827%22%2C%22message_ts%22%3A%221570301934.001000%22%2C%22attachment_id%22%3A%221%22%2C%22token%22%3A%22WogGVJJ93TJkB5M8ykE3RUfH%22%2C%22is_app_unfurl%22%3Afalse%2C%22original_message%22%3A%7B%22type%22%3A%22message%22%2C%22subtype%22%3A%22bot_message%22%2C%22text%22%3A%22%22%2C%22ts%22%3A%221570301934.001000%22%2C%22bot_id%22%3A%22BP2GLFL3W%22%2C%22attachments%22%3A%5B%7B%22author_name%22%3A%22%5Cu5f90%5Cu58eb%5Cu5bbd%22%2C%22callback_id%22%3A%22sillyhat-birthday%22%2C%22fallback%22%3A%22Happy+Birthday+%3A+Shikuan+Xu%22%2C%22text%22%3A%22%5Cu751f%5Cu65e5%5Cu5feb%5Cu4e50+%5Cu9634%5Cu5386+%3A+%5Cu4e94%5Cu6708%5Cu5341%5Cu56db%22%2C%22id%22%3A1%2C%22ts%22%3A1570301931%2C%22color%22%3A%22FFC0CB%22%2C%22actions%22%3A%5B%7B%22id%22%3A%221%22%2C%22name%22%3A%22ACTION_001%22%2C%22text%22%3A%22I+got+it%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%220%22%2C%22style%22%3A%22%22%7D%2C%7B%22id%22%3A%222%22%2C%22name%22%3A%22ACTION_002%22%2C%22text%22%3A%22An+hour+later%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%223600000%22%2C%22style%22%3A%22%22%7D%2C%7B%22id%22%3A%223%22%2C%22name%22%3A%22ACTION_003%22%2C%22text%22%3A%22Remind+me+tomorrow%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%2286400000%22%2C%22style%22%3A%22%22%7D%5D%7D%5D%7D%2C%22response_url%22%3A%22https%3A%5C%2F%5C%2Fhooks.slack.com%5C%2Factions%5C%2FTLNQNBVSS%5C%2F786981863767%5C%2Fgt8oHoyR1zzYWh5NYsrQ6gjE%22%2C%22trigger_id%22%3A%22773644306643.702838403910.1e4f58814c44394deba4c569297f9df9%22%7D`
+	//body := `payload=%7B%22type%22%3A%22interactive_message%22%2C%22actions%22%3A%5B%7B%22name%22%3A%22onehour%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat3%22%7D%5D%2C%22callback_id%22%3A%22sillyhat-birthday%22%2C%22team%22%3A%7B%22id%22%3A%22TLNQNBVSS%22%2C%22domain%22%3A%22sillyhatxu%22%7D%2C%22channel%22%3A%7B%22id%22%3A%22CM7364AQN%22%2C%22name%22%3A%22sillyhat-error-log%22%7D%2C%22user%22%3A%7B%22id%22%3A%22ULL6GKJ2G%22%2C%22name%22%3A%22sillyhatxu%22%7D%2C%22action_ts%22%3A%221570287720.790065%22%2C%22message_ts%22%3A%221570287687.003100%22%2C%22attachment_id%22%3A%221%22%2C%22token%22%3A%22WogGVJJ93TJkB5M8ykE3RUfH%22%2C%22is_app_unfurl%22%3Afalse%2C%22original_message%22%3A%7B%22type%22%3A%22message%22%2C%22subtype%22%3A%22bot_message%22%2C%22text%22%3A%22Would+you+like+to+play+a+game%3F%22%2C%22ts%22%3A%221570287687.003100%22%2C%22bot_id%22%3A%22BNMNB35S7%22%2C%22attachments%22%3A%5B%7B%22callback_id%22%3A%22sillyhat-birthday%22%2C%22fallback%22%3A%22You+are+unable+to+choose+a+game%22%2C%22text%22%3A%22Choose+a+game+to+play%22%2C%22id%22%3A1%2C%22color%22%3A%223AA3E3%22%2C%22actions%22%3A%5B%7B%22id%22%3A%221%22%2C%22name%22%3A%22tenminutus%22%2C%22text%22%3A%22%5Cu63a8%5Cu8fdf10%5Cu5206%5Cu949f%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat1%22%2C%22style%22%3A%22%22%7D%2C%7B%22id%22%3A%222%22%2C%22name%22%3A%22halfhour%22%2C%22text%22%3A%22%5Cu63a8%5Cu8fdf%5Cu534a%5Cu5c0f%5Cu65f6%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat2%22%2C%22style%22%3A%22%22%7D%2C%7B%22id%22%3A%223%22%2C%22name%22%3A%22onehour%22%2C%22text%22%3A%22%5Cu63a8%5Cu8fdf1%5Cu5c0f%5Cu65f6%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat3%22%2C%22style%22%3A%22%22%7D%2C%7B%22id%22%3A%224%22%2C%22name%22%3A%22tomorrow%22%2C%22text%22%3A%22%5Cu660e%5Cu5929%5Cu63d0%5Cu9192%5Cu6211%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat4%22%2C%22style%22%3A%22%22%7D%5D%7D%5D%7D%2C%22response_url%22%3A%22https%3A%5C%2F%5C%2Fhooks.slack.com%5C%2Factions%5C%2FTLNQNBVSS%5C%2F787254905270%5C%2FFqkNJK9P9WGlv6Us6FLlLe5W%22%2C%22trigger_id%22%3A%22772268928210.702838403910.0c1895c183e837809984da95ce8bd915%22%7D`
+	//body := `payload=%7B%22type%22%3A%22interactive_message%22%2C%22actions%22%3A%5B%7B%22name%22%3A%22game%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat%22%7D%5D%2C%22callback_id%22%3A%22sillyhat-birthday%22%2C%22team%22%3A%7B%22id%22%3A%22TLNQNBVSS%22%2C%22domain%22%3A%22sillyhatxu%22%7D%2C%22channel%22%3A%7B%22id%22%3A%22CM7364AQN%22%2C%22name%22%3A%22sillyhat-error-log%22%7D%2C%22user%22%3A%7B%22id%22%3A%22ULL6GKJ2G%22%2C%22name%22%3A%22sillyhatxu%22%7D%2C%22action_ts%22%3A%221570285310.721850%22%2C%22message_ts%22%3A%221570285307.002500%22%2C%22attachment_id%22%3A%221%22%2C%22token%22%3A%22WogGVJJ93TJkB5M8ykE3RUfH%22%2C%22is_app_unfurl%22%3Afalse%2C%22original_message%22%3A%7B%22type%22%3A%22message%22%2C%22subtype%22%3A%22bot_message%22%2C%22text%22%3A%22Would+you+like+to+play+a+game%3F%22%2C%22ts%22%3A%221570285307.002500%22%2C%22bot_id%22%3A%22BNMNB35S7%22%2C%22attachments%22%3A%5B%7B%22callback_id%22%3A%22sillyhat-birthday%22%2C%22fallback%22%3A%22You+are+unable+to+choose+a+game%22%2C%22text%22%3A%22Choose+a+game+to+play%22%2C%22id%22%3A1%2C%22color%22%3A%223AA3E3%22%2C%22actions%22%3A%5B%7B%22id%22%3A%221%22%2C%22name%22%3A%22game%22%2C%22text%22%3A%22Chess%22%2C%22type%22%3A%22button%22%2C%22value%22%3A%22sillyhat%22%2C%22style%22%3A%22%22%7D%5D%7D%5D%7D%2C%22response_url%22%3A%22https%3A%5C%2F%5C%2Fhooks.slack.com%5C%2Factions%5C%2FTLNQNBVSS%5C%2F787242018486%5C%2FSOcJhUSYBeqJMlmTDO86rk7n%22%2C%22trigger_id%22%3A%22787242018502.702838403910.e3d3dd4ac1e5caa8504779af75fea8d2%22%7D`
+	//encoding.GetCompressor()
+	//codec := encoding.GetCodec(body)
+	decodedValue, err := url.QueryUnescape(body)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Println(decodedValue)
+
+	//var v interface{}
+	//err := json.NewDecoder(bytes.NewReader([]byte(body))).Decode(&v)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println(v)
+	//fmt.Println(url.QueryEscape("payload"))
+	//fmt.Println(url.PathEscape(body))
+}
