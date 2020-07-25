@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/sillyhatxu/gin-utils"
+	"github.com/sillyhatxu/gin-utils/entity"
 	"github.com/sillyhatxu/gin-utils/gincodes"
 	"github.com/sillyhatxu/gin-utils/jwtutils"
+	"github.com/sillyhatxu/gin-utils/response"
 	"github.com/sirupsen/logrus"
 	"net"
 	"net/http"
@@ -59,16 +60,16 @@ var TokenKey = "SILLY-HAT-TOKEN"
 func get(ctx *gin.Context) {
 	token, err := ctx.Cookie(TokenKey)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginutils.Errorf(gincodes.PermissionDenied, err))
+		ctx.JSON(http.StatusOK, response.Errorf(gincodes.PermissionDenied, err))
 		return
 	}
 	var u User
 	err = jwtutils.Client.ParseToken(token, &u)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginutils.Errorf(gincodes.PermissionDenied, err))
+		ctx.JSON(http.StatusOK, response.Errorf(gincodes.PermissionDenied, err))
 		return
 	}
-	ctx.JSON(http.StatusOK, ginutils.Success(ginutils.Data(u)))
+	ctx.JSON(http.StatusOK, response.Success(entity.Data(u)))
 	return
 }
 
@@ -76,7 +77,7 @@ func login(ctx *gin.Context) {
 	var loginDTO *LoginDTO
 	err := ctx.ShouldBindJSON(&loginDTO)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginutils.Errorf(gincodes.InvalidArgument, err))
+		ctx.JSON(http.StatusOK, response.Errorf(gincodes.InvalidArgument, err))
 		return
 	}
 	logrus.Infof("loginDTO : %#v", loginDTO)
@@ -87,11 +88,11 @@ func login(ctx *gin.Context) {
 	}
 	token, err := jwtutils.Client.CreateToken(u)
 	if err != nil {
-		ctx.JSON(http.StatusOK, ginutils.Errorf(gincodes.PermissionDenied, err))
+		ctx.JSON(http.StatusOK, response.Errorf(gincodes.PermissionDenied, err))
 		return
 	}
 	ctx.SetCookie(TokenKey, token, 60*60*24, "/", "localhost", false, true)
 	//ctx.SetCookie("SILLY-HAT-TOKEN", token, 60*60*24, "/", "http://localhost:8080", true, true)
-	ctx.JSON(http.StatusOK, ginutils.Success(ginutils.Data(map[string]string{"token": token})))
+	ctx.JSON(http.StatusOK, response.Success(entity.Data(map[string]string{"token": token})))
 	return
 }

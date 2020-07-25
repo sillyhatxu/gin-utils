@@ -13,13 +13,21 @@ func SetupRouter(opts ...Option) (*gin.Engine, error) {
 		opt(config)
 	}
 	router := gin.New()
-
+	if config.SkipPaths == nil {
+		config.SkipPaths = []string{"/health"}
+	} else {
+		config.SkipPaths = append(config.SkipPaths, "/health")
+	}
+	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		SkipPaths: config.SkipPaths,
+	}))
+	router.Use(gin.Recovery())
 	if config.OpenHealth {
-		router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-			SkipPaths: []string{"/health"},
-		}))
-		router.Use(gin.Recovery())
-		router.GET("/health", func(c *gin.Context) {
+		relativePath := "/health"
+		if config.ContextPath != "" {
+			relativePath = "/" + config.ContextPath + relativePath
+		}
+		router.GET(relativePath, func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "UP", "message": "OK"})
 		})
 	}

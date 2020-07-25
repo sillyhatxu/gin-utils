@@ -4,21 +4,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sillyhatxu/gin-utils/codes"
 	"github.com/sillyhatxu/gin-utils/constants"
+	"github.com/sillyhatxu/gin-utils/gincodes"
 	"github.com/sillyhatxu/gin-utils/ginerrors"
 	"github.com/sillyhatxu/gin-utils/jwt"
+	"github.com/sillyhatxu/gin-utils/jwtutils"
+	"github.com/sillyhatxu/gin-utils/response"
 	"net/http"
 )
 
 func AuthRequire(secret string, input interface{}) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		isDebug := ctx.GetHeader(constants.DebugKey)
+		isDebug := ctx.GetHeader(jwtutils.DebugKey)
 		if isDebug == "true" {
 
 		}
 		token, err := ctx.Cookie("SILLY-HAT-TOKEN")
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
-			ctx.JSON(http.StatusUnauthorized, ginerrors.Error(codes.Unauthorized, "You are not authorized to access this page"))
+			ctx.JSON(http.StatusUnauthorized, response.Error(gincodes.Unauthorized, "You are not authorized to access this page"))
 			ctx.Abort()
 			return
 		}
