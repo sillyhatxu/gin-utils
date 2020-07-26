@@ -2,7 +2,6 @@ package response
 
 import (
 	"errors"
-	"fmt"
 	"github.com/sillyhatxu/gin-utils/entity"
 	"github.com/sillyhatxu/gin-utils/gincodes"
 	"github.com/stretchr/testify/assert"
@@ -14,28 +13,34 @@ func TestNew(t *testing.T) {
 		Id   int
 		Name string
 	}
-	err := entity.New("TEST_CODE", entity.Msg("have some error"), entity.Data(&Test{Id: 1, Name: "test-name"})).Err()
-	fmt.Println(err)
-
-	if e, ok := err.(*entity.Entity); ok {
-		fmt.Println("Code:", e.Code)
-		fmt.Println(fmt.Sprintf("Data:%#v", e.Data))
-		fmt.Println("Message:", e.Msg)
-	}
+	code := "TEST_CODE"
+	msg := "have some error"
+	data := &Test{Id: 1, Name: "test-name"}
+	err := entity.New(code, entity.Msg(msg), entity.Data(data)).Err()
+	assert.NotNil(t, err)
+	assert.Equal(t, "go-error: code = TEST_CODE ,message = have some error ,data = &{%!s(int=1) test-name}", err.Error())
+	e, ok := err.(*entity.Entity)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, code, e.Code)
+	assert.Equal(t, msg, e.Msg)
+	assert.Equal(t, data, e.Data)
+	assert.Nil(t, e.Extra)
 }
 
 func TestError(t *testing.T) {
-	err := NewError("TEST_CODE", "unknown error")
+	code1 := "TEST_CODE"
+	msg1 := "unknown error"
+	err := NewError(code1, msg1)
 	e, ok := FromError(err)
 	assert.EqualValues(t, ok, true)
-	assert.EqualValues(t, e.Code, "TEST_CODE")
-	assert.EqualValues(t, e.Msg, "unknown error")
+	assert.EqualValues(t, code1, e.Code)
+	assert.EqualValues(t, msg1, e.Msg)
 
-	err = errors.New("test error")
+	err = errors.New(msg1)
 	e, ok = FromError(err)
 	assert.EqualValues(t, ok, false)
-	assert.EqualValues(t, e.Code, gincodes.ServerError)
-	fmt.Println(e.Msg)
+	assert.EqualValues(t, gincodes.ServerError, e.Code)
+	assert.EqualValues(t, msg1, e.Msg)
 }
 
 func TestErrorf(t *testing.T) {
@@ -46,18 +51,22 @@ func TestErrorf(t *testing.T) {
 	type ExtraTest struct {
 		TotalCount int
 	}
-	err := NewError("TEST_CODE", "unknown error", entity.Data(&Test{Id: 1, Name: "test-name"}), entity.Extra(&ExtraTest{TotalCount: 500}))
+	code1 := "TEST_CODE"
+	msg1 := "unknown error"
+	data1 := &Test{Id: 1, Name: "test-name"}
+	extra1 := &ExtraTest{TotalCount: 500}
+	err := NewError(code1, msg1, entity.Data(data1), entity.Extra(extra1))
 	e, ok := FromError(err)
-	assert.EqualValues(t, ok, true)
-	assert.EqualValues(t, e.Code, "TEST_CODE")
-	assert.EqualValues(t, e.Msg, "unknown error")
-	fmt.Println(fmt.Sprintf("e : %#v", e))
-	fmt.Println(fmt.Sprintf("Data : %#v", e.Data))
-	fmt.Println(fmt.Sprintf("Extra : %#v", e.Extra))
+	assert.EqualValues(t, true, ok)
+	assert.EqualValues(t, code1, e.Code)
+	assert.EqualValues(t, msg1, e.Msg)
+	assert.EqualValues(t, data1, e.Data)
+	assert.EqualValues(t, extra1, e.Extra)
 
-	err = errors.New("test error")
+	msg2 := "test error"
+	err = errors.New(msg2)
 	e, ok = FromError(err)
-	assert.EqualValues(t, ok, false)
-	assert.EqualValues(t, e.Code, gincodes.ServerError)
-	fmt.Println(e.Msg)
+	assert.EqualValues(t, false, ok)
+	assert.EqualValues(t, gincodes.ServerError, e.Code)
+	assert.EqualValues(t, msg2, e.Msg)
 }

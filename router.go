@@ -6,6 +6,7 @@ import (
 )
 
 func SetupRouter(opts ...Option) (*gin.Engine, error) {
+	//gin.SetMode()
 	config := &Config{
 		OpenHealth: true,
 	}
@@ -25,7 +26,7 @@ func SetupRouter(opts ...Option) (*gin.Engine, error) {
 	if config.OpenHealth {
 		relativePath := "/health"
 		if config.ContextPath != "" {
-			relativePath = "/" + config.ContextPath + relativePath
+			relativePath = config.ContextPath + relativePath
 		}
 		router.GET(relativePath, func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "UP", "message": "OK"})

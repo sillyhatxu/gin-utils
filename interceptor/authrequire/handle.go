@@ -2,11 +2,8 @@ package authrequire
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sillyhatxu/gin-utils/codes"
-	"github.com/sillyhatxu/gin-utils/constants"
+	"github.com/go-kit/kit/auth/jwt"
 	"github.com/sillyhatxu/gin-utils/gincodes"
-	"github.com/sillyhatxu/gin-utils/ginerrors"
-	"github.com/sillyhatxu/gin-utils/jwt"
 	"github.com/sillyhatxu/gin-utils/jwtutils"
 	"github.com/sillyhatxu/gin-utils/response"
 	"net/http"
@@ -14,6 +11,7 @@ import (
 
 func AuthRequire(secret string, input interface{}) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
 		isDebug := ctx.GetHeader(jwtutils.DebugKey)
 		if isDebug == "true" {
 
@@ -21,14 +19,14 @@ func AuthRequire(secret string, input interface{}) gin.HandlerFunc {
 		token, err := ctx.Cookie("SILLY-HAT-TOKEN")
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
-			ctx.JSON(http.StatusUnauthorized, response.Error(gincodes.Unauthorized, "You are not authorized to access this page"))
+			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthorized, "You are not authorized to access this page"))
 			ctx.Abort()
 			return
 		}
 		err = jwt.ParseToken(token, secret, &input)
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
-			ctx.JSON(http.StatusUnauthorized, ginerrors.Error(codes.ServerError, "error parsing input"))
+			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.ServerError, "error parsing input"))
 			ctx.Abort()
 			return
 		}
