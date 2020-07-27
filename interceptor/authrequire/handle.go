@@ -3,43 +3,50 @@ package authrequire
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sillyhatxu/gin-utils/gincodes"
+	"github.com/sillyhatxu/gin-utils/jwtutils"
 	"github.com/sillyhatxu/gin-utils/response"
 	"net/http"
 )
 
-func AuthRequire(input interface{}, opts ...Option) gin.HandlerFunc {
+type OptionService interface {
+	GetJWTClient() *jwtutils.JWT
+	GetTokenKey() string
+	GetContextKey() string
+	IsDebug() bool
+	GetAuth(token string) (interface{}, error)
+	GetAuthForDebug(ctx *gin.Context) (interface{}, error)
+}
+
+func AuthRequire(optionService OptionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		config := &Config{
-			JWTClient:  nil,
-			TokenKey:   "",
-			ContextKey: "",
-			IsDebug:    false,
-			DebugInput: nil,
-		}
-		for _, opt := range opts {
-			opt(config)
-		}
-		if config.IsDebug {
-			input = config.DebugInput
-			ctx.Set(config.ContextKey, input)
+		if optionService.IsDebug() {
+			auth, err := optionService.GetAuthForDebug(ctx)
+			if err != nil {
+				ctx.Header("Content-Type", "application/json")
+				ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthenticated, "Unauthenticated indicates the request does not have valid"))
+				ctx.Abort()
+				return
+			}
+			ctx.Set(optionService.GetContextKey(), auth)
 			ctx.Next()
 			return
 		}
-		token, err := ctx.Cookie(config.TokenKey)
+		token, err := ctx.Cookie(optionService.GetTokenKey())
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
-			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthorized, "You are not authorized to access this page"))
+			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthorized, "Unauthenticated indicates the request does not have valid"))
 			ctx.Abort()
 			return
 		}
-		err = config.JWTClient.ParseToken(token, &input)
+		auth, err := optionService.GetAuth(token)
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
-			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.ServerError, "error parsing input"))
+			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthenticated, "Unauthenticated indicates the request does not have valid"))
 			ctx.Abort()
 			return
 		}
-		ctx.Set(config.ContextKey, input)
+		ctx.Set(optionService.GetContextKey(), auth)
 		ctx.Next()
+		return
 	}
 }

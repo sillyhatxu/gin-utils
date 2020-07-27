@@ -6,13 +6,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-const (
-	DebugKey      = "debug"
-	JwtEntity     = "JWT_ENTITY"
-	TokenKey      = "SILLY-HAT-TOKEN"
-	Authorization = "Authorization"
-)
-
 type JWT struct {
 	secretKey []byte
 }
