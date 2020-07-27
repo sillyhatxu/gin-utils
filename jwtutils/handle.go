@@ -1,4 +1,4 @@
-package authrequire
+package jwtutils
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,39 +7,39 @@ import (
 	"net/http"
 )
 
-func AuthRequire(input interface{}, opts ...Option) gin.HandlerFunc {
+func AuthRequire(secret string, input interface{}) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		config := &Config{
-			JWTClient:  nil,
-			TokenKey:   "",
-			ContextKey: "",
-			IsDebug:    false,
-			DebugInput: nil,
+		isDebug := ctx.GetHeader(DebugKey)
+		if isDebug == "true" {
+
 		}
-		for _, opt := range opts {
-			opt(config)
-		}
-		if config.IsDebug {
-			input = config.DebugInput
-			ctx.Set(config.ContextKey, input)
-			ctx.Next()
-			return
-		}
-		token, err := ctx.Cookie(config.TokenKey)
+		token, err := ctx.Cookie("SILLY-HAT-TOKEN")
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
 			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.Unauthorized, "You are not authorized to access this page"))
 			ctx.Abort()
 			return
 		}
-		err = config.JWTClient.ParseToken(token, &input)
+		err = ParseToken(token, secret, &input)
 		if err != nil {
 			ctx.Header("Content-Type", "application/json")
 			ctx.JSON(http.StatusUnauthorized, response.NewError(gincodes.ServerError, "error parsing input"))
 			ctx.Abort()
 			return
 		}
-		ctx.Set(config.ContextKey, input)
+
+		ctx.Set(constants.JwtEntity, input)
 		ctx.Next()
+		//t := time.Now()
+		//// Set example variable
+		//ctx.Set("example", "12345")
+		//// before request
+		//ctx.Next()
+		//// after request
+		//latency := time.Since(t)
+		//log.Print(latency)
+		//// access the status we are sending
+		//status := ctx.Writer.Status()
+		//log.Println(status)
 	}
 }
