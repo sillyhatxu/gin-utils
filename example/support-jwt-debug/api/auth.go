@@ -37,7 +37,7 @@ func (auth *Auth) GetAuth(token string) (interface{}, error) {
 }
 
 func (auth *Auth) GetAuthForDebug(ctx *gin.Context) (interface{}, error) {
-	userId := ctx.GetString("SILLY_HAT_USER_ID")
+	userId := ctx.GetHeader("SILLY_HAT_USER_ID")
 	if userId == "" {
 		return nil, response.NewError(gincodes.Unauthenticated, "Unauthenticated indicates the request does not have valid")
 	}
