@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/gin-gonic/gin"
-	"github.com/sillyhatxu/gin-utils/codes"
-	"github.com/sillyhatxu/gin-utils/response"
+	"github.com/sillyhatxu/gin-utils/v2/gincodes"
+	"github.com/sillyhatxu/gin-utils/v2/response"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -34,7 +34,7 @@ func Handle() gin.HandlerFunc {
 		}()
 		body, err := ctx.GetRawData()
 		if err != nil {
-			ctx.JSON(http.StatusOK, response.Errorf(codes.InvalidParameter, err))
+			ctx.JSON(http.StatusOK, response.Errorf(gincodes.InvalidParameter, err))
 			return
 		}
 		logrus.Infof("request [%s%s] body : %v", ctx.Request.Host, ctx.Request.URL, string(body))

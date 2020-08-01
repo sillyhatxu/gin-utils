@@ -1,4 +1,4 @@
-module github.com/sillyhatxu/gin-utils
+module github.com/sillyhatxu/gin-utils/v2
 
 go 1.14
 

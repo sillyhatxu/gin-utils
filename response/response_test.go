@@ -2,8 +2,8 @@ package response
 
 import (
 	"errors"
-	"github.com/sillyhatxu/gin-utils/entity"
-	"github.com/sillyhatxu/gin-utils/gincodes"
+	"github.com/sillyhatxu/gin-utils/v2/entity"
+	"github.com/sillyhatxu/gin-utils/v2/gincodes"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

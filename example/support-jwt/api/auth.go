@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sillyhatxu/gin-utils/gincodes"
-	"github.com/sillyhatxu/gin-utils/jwtutils"
-	"github.com/sillyhatxu/gin-utils/response"
+	"github.com/sillyhatxu/gin-utils/v2/gincodes"
+	"github.com/sillyhatxu/gin-utils/v2/jwtutils"
+	"github.com/sillyhatxu/gin-utils/v2/response"
 )
 
 type Auth struct {

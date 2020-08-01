@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/sillyhatxu/gin-utils/entity"
-	"github.com/sillyhatxu/gin-utils/gincodes"
+	"github.com/sillyhatxu/gin-utils/v2/entity"
+	"github.com/sillyhatxu/gin-utils/v2/gincodes"
 )
 
 func NewError(code, msg string, opts ...entity.Option) error {

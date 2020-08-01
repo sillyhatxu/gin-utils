@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sillyhatxu/gin-utils/example/simple/api"
+	"github.com/sillyhatxu/gin-utils/v2/example/simple/api"
 )
 
 func main() {
