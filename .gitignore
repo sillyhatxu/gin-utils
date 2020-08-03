@@ -15,3 +15,5 @@
 *.iws
 .idea/
 vendor/
+coverage.txt
+profile.out
